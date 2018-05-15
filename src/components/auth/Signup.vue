@@ -75,6 +75,16 @@
               this.feedback = 'Alias already taken';
             } else {
               firebase.auth().createUserWithEmailAndPassword(this.email, this.password)
+                .then(({ user }) => {
+                  ref.set({
+                    alias: this.alias,
+                    geolocation: null,
+                    user_id: user.uid,
+                  });
+                })
+                .then(() => {
+                  this.$router.push({ name: 'Gmap' });
+                })
                 .catch((err) => {
                   this.feedback = err.message;
                   throw new Error(err);
