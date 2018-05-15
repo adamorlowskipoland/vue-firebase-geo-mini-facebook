@@ -24,6 +24,8 @@
                id="alias"
                v-model="alias">
       </div>
+      <p v-if="feedback"
+         class="red-text center">{{ feedback }}</p>
       <div class="field center">
         <button class="btn deep-purple">Signup</button>
       </div>
@@ -32,6 +34,10 @@
 </template>
 
 <script>
+  import slugify from 'slugify';
+  import db from '@/firebase/init';
+  import firebase from 'firebase';
+
   export default {
     name: 'Signup',
     data() {
@@ -39,11 +45,43 @@
         email: null,
         password: null,
         alias: null,
+        feedback: null,
+        slug: null,
       };
+    },
+    computed: {
+      filledAllInputs() {
+        return !!(this.alias && this.email && this.password);
+      },
     },
     methods: {
       signup() {
-
+        if (this.filledAllInputs) {
+          this.slug = slugify(this.alias, {
+            replacement: '-',
+            remove: /[$*_+~.()'"!\-:@]/g,
+            lower: true,
+          });
+          this.verifyAlias(this.slug);
+        } else {
+          this.feedback = 'You must enter an alias';
+        }
+      },
+      verifyAlias(alias) {
+        const ref = db.collection('users').doc(alias);
+        ref.get()
+          .then((doc) => {
+            if (doc.exists) {
+              this.feedback = 'Alias already taken';
+            } else {
+              firebase.auth().createUserWithEmailAndPassword(this.email, this.password)
+                .catch((err) => {
+                  this.feedback = err.message;
+                  throw new Error(err);
+                });
+              this.feedback = 'Alias is free';
+            }
+          });
       },
     },
   };
