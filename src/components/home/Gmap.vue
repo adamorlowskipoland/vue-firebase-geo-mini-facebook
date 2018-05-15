@@ -7,6 +7,8 @@
 </template>
 
 <script>
+  import firebase from 'firebase';
+
   export default {
     name: 'Gmap',
     data() {
@@ -32,6 +34,7 @@
     },
     mounted() {
       this.renderMap();
+      console.log(firebase.auth().currentUser);
     },
   };
 </script>
