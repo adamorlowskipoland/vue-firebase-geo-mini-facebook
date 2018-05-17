@@ -23,6 +23,29 @@
       };
     },
     methods: {
+      addUserMarker(map) {
+        db.collection('users')
+          .get()
+          .then((users) => {
+            users.forEach((user) => {
+              const data = user.data();
+              if (data.geolocation) {
+                // eslint-disable-next-line
+                const marker = new google.maps.Marker({
+                  position: {
+                    lat: data.geolocation.lat,
+                    lng: data.geolocation.lng,
+                  },
+                  map,
+                });
+                //  add click event to marker
+                marker.addListener('click', () => {
+                  this.$router.push({ name: 'ViewProfile', params: { id: user.id } });
+                });
+              }
+            });
+          });
+      },
       renderMap() {
         // eslint-disable-next-line
         const map = new google.maps.Map(this.$refs.map, {
@@ -35,14 +58,12 @@
           maxZoom: 15,
           streetViewControl: false,
         });
+        this.addUserMarker(map);
       },
     },
     mounted() {
       // get current user
       const user = firebase.auth().currentUser;
-      if (user) {
-        console.log(user);
-      }
       // get user geolocation
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(({ coords }) => {
@@ -57,7 +78,7 @@
                   geolocation: {
                     lat: coords.latitude,
                     lng: coords.longitude,
-                  }
+                  },
                 });
               });
             })
@@ -66,7 +87,6 @@
             });
         }, (err) => {
           this.renderMap();
-          console.log(err);
           throw new Error(err);
         }, { maximumAge: 60000, timeout: 6000 });
       } else {

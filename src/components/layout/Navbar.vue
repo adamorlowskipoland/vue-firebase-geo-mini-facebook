@@ -50,6 +50,6 @@
           this.user = null;
         }
       });
-    }
+    },
   };
 </script>

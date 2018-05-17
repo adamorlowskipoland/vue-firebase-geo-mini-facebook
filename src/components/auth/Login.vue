@@ -47,8 +47,7 @@
       login() {
         if (this.filledAllInputs) {
           firebase.auth().signInWithEmailAndPassword(this.email, this.password)
-            .then(({ user }) => {
-              console.log(user);
+            .then(() => {
               this.$router.push({ name: 'Gmap' });
             })
             .catch((err) => {
