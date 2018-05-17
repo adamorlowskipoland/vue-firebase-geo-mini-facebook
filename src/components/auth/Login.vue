@@ -27,6 +27,8 @@
 </template>
 
 <script>
+  import firebase from 'firebase';
+
   export default {
     name: 'Login',
     data() {
@@ -36,9 +38,27 @@
         feedback: null,
       };
     },
+    computed: {
+      filledAllInputs() {
+        return !!(this.email && this.password);
+      },
+    },
     methods: {
       login() {
-        console.log(this.email, this.password);
+        if (this.filledAllInputs) {
+          firebase.auth().signInWithEmailAndPassword(this.email, this.password)
+            .then(({ user }) => {
+              console.log(user);
+              this.$router.push({ name: 'Gmap' });
+            })
+            .catch((err) => {
+              this.feedback = err.message;
+              throw new Error(err);
+            });
+          this.feedback = null;
+        } else {
+          this.feedback = 'Please fill both fields';
+        }
       },
     },
   };

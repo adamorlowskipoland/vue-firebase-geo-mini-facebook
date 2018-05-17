@@ -28,12 +28,15 @@
     },
     methods: {
       logout() {
-        firebase
-          .auth()
-          .signOut()
-          .then(() => {
-            this.$router.push({ name: 'Gmap' });
-          });
+        const user = firebase.auth().currentUser;
+        if (user) {
+          firebase
+            .auth()
+            .signOut()
+            .then(() => {
+              this.$router.push({ name: 'Login' });
+            });
+        }
       },
     },
   };
