@@ -19,7 +19,6 @@
           <p v-if="feedback"
              class="red-text center">{{ feedback }}</p>
         </div>
-        <button class="btn deep-purple">Add</button>
       </form>
     </div>
   </div>
