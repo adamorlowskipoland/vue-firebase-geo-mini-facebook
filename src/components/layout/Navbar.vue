@@ -12,7 +12,7 @@
           <li v-if="!user">
             <router-link :to="{ name: 'Login' }">Login</router-link>
           </li>
-          <li v-if="user"><a>{{ user.email }}</a></li>
+          <li v-if="user"><a @click.prevent="goToProfile">{{ user.email }}</a></li>
           <li v-if="user"><a @click="logout">Logout</a></li>
         </ul>
       </div>
@@ -21,6 +21,7 @@
 </template>
 <script>
   import firebase from 'firebase';
+  import db from '@/firebase/init';
 
   export default {
     name: 'Navbar',
@@ -40,6 +41,12 @@
               this.$router.push({ name: 'Login' });
             });
         }
+      },
+      async goToProfile() {
+        const users = await db.collection('users').where('user_id', '==', this.user.uid).get();
+        users.forEach((user) => {
+          this.$router.push({ name: 'ViewProfile', params: { id: user.id } });
+        });
       },
     },
     created() {

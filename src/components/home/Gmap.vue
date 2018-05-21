@@ -14,83 +14,73 @@
     name: 'Gmap',
     data() {
       return {
-        // Warsaw
-        // lat: 52.229676,
-        // lng: 21.012229,
-        // London
-        lat: 52.229676,
-        lng: -2.012229,
-      };
-    },
-    methods: {
-      addUserMarker(map) {
-        db.collection('users')
-          .get()
-          .then((users) => {
-            users.forEach((user) => {
-              const data = user.data();
-              if (data.geolocation) {
-                // eslint-disable-next-line
-                const marker = new google.maps.Marker({
-                  position: {
-                    lat: data.geolocation.lat,
-                    lng: data.geolocation.lng,
-                  },
-                  map,
-                });
-                //  add click event to marker
-                marker.addListener('click', () => {
-                  this.$router.push({ name: 'ViewProfile', params: { id: user.id } });
-                });
-              }
-            });
-          });
-      },
-      renderMap() {
-        // eslint-disable-next-line
-        const map = new google.maps.Map(this.$refs.map, {
+        mapOtions: {
           center: {
-            lat: this.lat,
-            lng: this.lng,
+            lat: 52.229676,
+            lng: 21.012229,
           },
           zoom: 6,
           minZoom: 3,
           maxZoom: 15,
           streetViewControl: false,
+        },
+      };
+    },
+    methods: {
+      async addUsersMarker(map) {
+        const users = await db.collection('users').get();
+        users.forEach((user) => {
+          const data = user.data();
+          if (data.geolocation) {
+            // eslint-disable-next-line
+            const marker = new google.maps.Marker({
+              position: {
+                lat: data.geolocation.lat,
+                lng: data.geolocation.lng,
+              },
+              map,
+            });
+            marker.addListener('click', () => {
+              this.$router.push({ name: 'ViewProfile', params: { id: user.id } });
+            });
+          }
         });
-        this.addUserMarker(map);
+      },
+      updateGeolocations({ latitude, longitude }) {
+        this.mapOtions.center.lat = latitude;
+        this.mapOtions.center.lng = longitude;
+      },
+      async updateUserDataBaseGeolocations() {
+        const user = firebase.auth().currentUser;
+        const snapshot = await db.collection('users')
+          .where('user_id', '==', user.uid)
+          .get();
+        snapshot.forEach((doc) => {
+          db.collection('users').doc(doc.id).update({
+            geolocation: {
+              lat: this.mapOtions.center.lat,
+              lng: this.mapOtions.center.lng,
+            },
+          });
+        });
+      },
+      async renderMap() {
+        // eslint-disable-next-line
+        const map = new google.maps.Map(this.$refs.map, this.mapOtions);
+        await this.updateUserDataBaseGeolocations();
+        this.addUsersMarker(map);
       },
     },
     mounted() {
-      // get current user
-      const user = firebase.auth().currentUser;
-      // get user geolocation
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(({ coords }) => {
-          this.lat = coords.latitude;
-          this.lng = coords.longitude;
-          // find the user record and then update goecoords
-          db.collection('users').where('user_id', '==', user.uid)
-            .get()
-            .then((snapshot) => {
-              snapshot.forEach((doc) => {
-                db.collection('users').doc(doc.id).update({
-                  geolocation: {
-                    lat: coords.latitude,
-                    lng: coords.longitude,
-                  },
-                });
-              });
-            })
-            .then(() => {
-              this.renderMap();
-            });
+          this.updateGeolocations(coords);
+          this.renderMap();
         }, (err) => {
           this.renderMap();
           throw new Error(err);
-        }, { maximumAge: 60000, timeout: 6000 });
+        }, { maximumAge: 60000, timeout: 3000 });
       } else {
-        //  position center by default values
         this.renderMap();
       }
     },
