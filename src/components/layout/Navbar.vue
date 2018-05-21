@@ -31,15 +31,11 @@
       };
     },
     methods: {
-      logout() {
+      async logout() {
         const user = firebase.auth().currentUser;
         if (user) {
-          firebase
-            .auth()
-            .signOut()
-            .then(() => {
-              this.$router.push({ name: 'Login' });
-            });
+          await firebase.auth().signOut();
+          this.$router.push({ name: 'Login' });
         }
       },
       async goToProfile() {

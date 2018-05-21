@@ -67,31 +67,28 @@
           this.feedback = 'You must enter an alias';
         }
       },
-      verifyAlias(alias) {
-        const ref = db.collection('users').doc(alias);
-        ref.get()
-          .then((doc) => {
-            if (doc.exists) {
-              this.feedback = 'Alias already taken';
-            } else {
-              firebase.auth().createUserWithEmailAndPassword(this.email, this.password)
-                .then(({ user }) => {
-                  ref.set({
-                    alias: this.alias,
-                    geolocation: null,
-                    user_id: user.uid,
-                  });
-                })
-                .then(() => {
-                  this.$router.push({ name: 'Gmap' });
-                })
-                .catch((err) => {
-                  this.feedback = err.message;
-                  throw new Error(err);
-                });
-              this.feedback = 'Alias is free';
-            }
-          });
+      async verifyAlias(alias) {
+        try {
+          const ref = await db.collection('users').doc(alias);
+          const doc = await ref.get();
+          if (doc.exists) {
+            this.feedback = 'Alias alredy taken';
+          } else {
+            this.feedback = 'Signing in...';
+            const { user } = await firebase.auth()
+              .createUserWithEmailAndPassword(this.email, this.password);
+            await ref.set({
+              alias: this.alias,
+              geolocation: null,
+              user_id: user.uid,
+            });
+            this.$router.push({ name: 'Gmap' });
+          }
+        }
+        catch (err) {
+          this.feedback = err.message;
+          throw new Error(err);
+        }
       },
     },
   };

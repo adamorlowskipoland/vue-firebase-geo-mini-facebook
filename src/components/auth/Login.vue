@@ -44,16 +44,17 @@
       },
     },
     methods: {
-      login() {
+      async login() {
         if (this.filledAllInputs) {
-          firebase.auth().signInWithEmailAndPassword(this.email, this.password)
-            .then(() => {
-              this.$router.push({ name: 'Gmap' });
-            })
-            .catch((err) => {
-              this.feedback = err.message;
-              throw new Error(err);
-            });
+          try {
+            this.feedback = 'Signing in...';
+            await firebase.auth().signInWithEmailAndPassword(this.email, this.password);
+            this.$router.push({ name: 'Gmap' });
+          }
+          catch (err) {
+            this.feedback = err.message;
+            throw new Error(err);
+          }
           this.feedback = null;
         } else {
           this.feedback = 'Please fill both fields';

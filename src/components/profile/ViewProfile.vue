@@ -40,65 +40,65 @@
       };
     },
     methods: {
-      addComment() {
+      async addComment() {
         if (this.newComment) {
           this.feedback = null;
-          db.collection('comments')
-            .add({
-              to: this.$route.params.id,
-              from: this.user.alias,
-              content: this.newComment,
-              time: Date.now(),
-            })
-            .then(() => {
-              this.newComment = null;
-            })
-            .catch((err) => {
-              throw new Error(err);
-            });
+          try {
+            await db.collection('comments')
+              .add({
+                to: this.$route.params.id,
+                from: this.user.alias,
+                content: this.newComment,
+                time: Date.now(),
+              });
+            this.newComment = null;
+          }
+          catch (err) {
+            this.feedback = err.message;
+            throw new Error(err);
+          }
           this.newComment = null;
         } else {
           this.feedback = 'Enter a comment';
         }
       },
-    },
-    created() {
-      const ref = db.collection('users');
-
-      //  get current user
-      ref.where('user_id', '==', firebase.auth().currentUser.uid)
-        .get()
-        .then((snapshot) => {
+      async setCurrentUser(ref) {
+        try {
+          const snapshot = await ref.where('user_id', '==', firebase.auth().currentUser.uid).get();
           snapshot.forEach((doc) => {
             this.user = doc.data();
             this.user.id = doc.id;
           });
-        })
-        .catch((err) => {
+        }
+        catch (err) {
           throw new Error(err);
-        });
-
-      //  profile data
-      ref.doc(this.$route.params.id)
-        .get()
-        .then((user) => {
-          this.profile = user.data();
-        });
-
-      //  comments
-      db.collection('comments')
-        .where('to', '==', this.$route.params.id)
-        .onSnapshot((snapshot) => {
-          snapshot.docChanges().forEach((change) => {
-            if (change.type === 'added') {
-              this.comments.unshift({
-                from: change.doc.data().from,
-                content: change.doc.data().content,
-                time: change.doc.data().time,
-              });
-            }
+        }
+      },
+      async setProfileData(ref) {
+        const user = await ref.doc(this.$route.params.id).get();
+        this.profile = user.data();
+      },
+      displayComments() {
+        db.collection('comments')
+          .where('to', '==', this.$route.params.id)
+          .onSnapshot((snapshot) => {
+            snapshot.docChanges().forEach(({ type, doc }) => {
+              if (type === 'added') {
+                this.comments.unshift({
+                  from: doc.data().from,
+                  content: doc.data().content,
+                  time: doc.data().time,
+                });
+              }
+            });
           });
-        });
+      },
+    },
+    created() {
+      const ref = db.collection('users');
+      this.setCurrentUser(ref);
+      this.setProfileData(ref);
+      this.displayComments();
     },
   };
 </script>
