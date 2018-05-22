@@ -84,6 +84,7 @@
             });
             this.$router.push({ name: 'Gmap' });
           }
+          // eslint-disable-next-line
         }
         catch (err) {
           this.feedback = err.message;

@@ -52,6 +52,7 @@
                 time: Date.now(),
               });
             this.newComment = null;
+            // eslint-disable-next-line
           }
           catch (err) {
             this.feedback = err.message;
@@ -69,6 +70,7 @@
             this.user = doc.data();
             this.user.id = doc.id;
           });
+          // eslint-disable-next-line
         }
         catch (err) {
           throw new Error(err);
@@ -80,6 +82,7 @@
       },
       displayComments() {
         db.collection('comments')
+          .orderBy('time')
           .where('to', '==', this.$route.params.id)
           .onSnapshot((snapshot) => {
             snapshot.docChanges().forEach(({ type, doc }) => {

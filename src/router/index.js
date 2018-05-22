@@ -40,11 +40,7 @@ const router = new Router({
     },
     {
       path: '/*',
-      name: 'Gmap',
-      component: Gmap,
-      meta: {
-        requiresAuth: true,
-      },
+      redirect: 'Gmap',
     },
   ],
 });
