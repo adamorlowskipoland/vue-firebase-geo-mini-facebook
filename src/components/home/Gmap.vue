@@ -102,7 +102,7 @@
         await this.addUsersMarker();
         this.updateMarkers();
         // eslint-disable-next-line
-        google.maps.event.addListener(this.map, 'bounds_changed', this.updateMarkers);
+        google.maps.event.addListener(this.map, 'idle', this.updateMarkers);
       },
     },
     mounted() {
