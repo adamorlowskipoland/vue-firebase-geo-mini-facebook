@@ -43,7 +43,6 @@
         this.mapOtions.center.lng = longitude;
       },
       async updateUserDataBaseGeolocations() {
-        console.log(this.mapOtions.center);
         const snapshot = await db.collection('users')
           .where('user_id', '==', this.user.uid)
           .get();
