@@ -32,6 +32,7 @@
     name: 'ViewProfile',
     data() {
       return {
+        users: null,
         profile: null,
         newComment: null,
         feedback: null,
@@ -81,6 +82,7 @@
         this.profile = user.data();
       },
       displayComments() {
+        this.comments = [];
         db.collection('comments')
           .orderBy('time')
           .where('to', '==', this.$route.params.id)
@@ -97,8 +99,15 @@
           });
       },
     },
+    beforeRouteUpdate(to, from, next) {
+      this.$route.params.id = to.params.id;
+      this.setProfileData(this.users);
+      this.displayComments();
+      next();
+    },
     created() {
       const ref = db.collection('users');
+      this.users = ref;
       this.setCurrentUser(ref);
       this.setProfileData(ref);
       this.displayComments();

@@ -28,6 +28,7 @@
 
 <script>
   import firebase from 'firebase';
+  import { mapMutations } from 'vuex';
 
   export default {
     name: 'Login',
@@ -44,21 +45,28 @@
       },
     },
     methods: {
+      ...mapMutations([
+        'togglePreLoader',
+      ]),
       async login() {
+        this.togglePreLoader();
         if (this.filledAllInputs) {
           try {
-            this.feedback = 'Signing in...';
             await firebase.auth().signInWithEmailAndPassword(this.email, this.password);
             this.$router.push({ name: 'Gmap' });
             // eslint-disable-next-line
           }
           catch (err) {
             this.feedback = err.message;
+            this.togglePreLoader();
             throw new Error(err);
+            // eslint-disable-next-line
           }
           this.feedback = null;
+          this.togglePreLoader();
         } else {
           this.feedback = 'Please fill both fields';
+          this.togglePreLoader();
         }
       },
     },

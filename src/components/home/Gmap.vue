@@ -9,6 +9,7 @@
 <script>
   import firebase from 'firebase/app';
   import db from '@/firebase/init';
+  import { mapMutations } from 'vuex';
 
   export default {
     name: 'Gmap',
@@ -32,6 +33,9 @@
       };
     },
     methods: {
+      ...mapMutations([
+        'togglePreLoader',
+      ]),
       async setUpUser() {
         this.user = await firebase.auth().currentUser;
       },
@@ -102,9 +106,11 @@
         this.updateMarkers();
         // eslint-disable-next-line
         google.maps.event.addListener(this.map, 'idle', this.updateMarkers);
+        this.togglePreLoader();
       },
     },
     mounted() {
+      this.togglePreLoader();
       this.setUpUser();
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(({ coords }) => {
