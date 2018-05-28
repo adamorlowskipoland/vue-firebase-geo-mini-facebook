@@ -58,16 +58,14 @@
           }
           catch (err) {
             this.feedback = err.message;
-            this.togglePreLoader();
             throw new Error(err);
             // eslint-disable-next-line
           }
           this.feedback = null;
-          this.togglePreLoader();
         } else {
           this.feedback = 'Please fill both fields';
-          this.togglePreLoader();
         }
+        this.togglePreLoader();
       },
     },
   };

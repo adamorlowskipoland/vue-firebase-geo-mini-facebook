@@ -65,6 +65,16 @@
           if (data.geolocation) {
             const marker = this.createMarker(data.geolocation);
             marker.addListener('click', () => {
+              this.map.panTo(marker.getPosition());
+              const content = `<div><p>${data.alias}</p><p>dbl click flag to Go to profile</p></div>`;
+              // eslint-disable-next-line
+              const tooltip = new google.maps.InfoWindow({
+                content,
+                maxWidth: 200,
+              });
+              tooltip.open(this.map, marker);
+            });
+            marker.addListener('dblclick', () => {
               this.$router.push({ name: 'ViewProfile', params: { id: user.id } });
             });
             this.markers.push(marker);
@@ -74,27 +84,37 @@
       createMarker({ lat, lng }) {
         // eslint-disable-next-line
         return new google.maps.Marker({
+          // eslint-disable-next-line
+          animation: google.maps.Animation.DROP,
           position: {
             lat,
             lng,
           },
+          icon: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
         });
       },
       async updateMarkers() {
+        console.log('iddle');
         this.bounds = await this.map.getBounds();
-        const geolocation = {};
         this.markers.forEach((marker) => {
-          geolocation.lat = marker.position.lat();
-          geolocation.lng = marker.position.lng();
-          if (this.userInViewPort(geolocation)) {
+          if (this.userInViewPort(marker) && marker.visible) {
+            if (!marker.map) {
+              marker.setMap(this.map);
+            }
+          } else if (this.userInViewPort(marker)) {
+            // eslint-disable-next-line
+            marker.setAnimation(google.maps.Animation.DROP);
+            marker.setVisible(true);
             marker.setMap(this.map);
           } else {
+            marker.setAnimation(null);
+            marker.setVisible(false);
             marker.setMap(null);
           }
         });
       },
-      userInViewPort(geolocation) {
-        return this.bounds.contains(geolocation);
+      userInViewPort(marker) {
+        return this.bounds.contains(marker.getPosition());
       },
       async renderMap() {
         // eslint-disable-next-line
