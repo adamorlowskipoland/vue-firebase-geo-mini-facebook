@@ -1,8 +1,8 @@
 <template>
-  <div class="map">
-    <div id="map"
-         ref="map"
-         class="google-map"></div>
+  <div class='map'>
+    <div id='map'
+         ref='map'
+         class='google-map'></div>
   </div>
 </template>
 
@@ -10,6 +10,8 @@
   import firebase from 'firebase/app';
   import db from '@/firebase/init';
   import { mapMutations } from 'vuex';
+
+  const icons = require.context('@/assets/', false, /\.png$|\.jpg$/);
 
   export default {
     name: 'Gmap',
@@ -29,6 +31,11 @@
           minZoom: 3,
           maxZoom: 15,
           streetViewControl: false,
+          styles:
+            [{ stylers: [{ saturation: -100 }, { gamma: 1 }] }, {
+              elementType: 'labels.text.stroke',
+              stylers: [{ visibility: 'off' }],
+            }],
         },
       };
     },
@@ -64,6 +71,7 @@
           const data = user.data();
           if (data.geolocation) {
             const marker = this.createMarker(data.geolocation);
+            // marker.setLabel(data.alias);
             marker.addListener('click', () => {
               this.map.panTo(marker.getPosition());
               const content = `<div><p>${data.alias}</p><p>dbl click flag to Go to profile</p></div>`;
@@ -90,11 +98,14 @@
             lat,
             lng,
           },
-          icon: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
+          icon: this.loadImg('ninja.png'),
+          // icon: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
         });
       },
+      loadImg(path) {
+        return path ? icons(`./${path}`) : 0;
+      },
       async updateMarkers() {
-        console.log('iddle');
         this.bounds = await this.map.getBounds();
         this.markers.forEach((marker) => {
           if (this.userInViewPort(marker) && marker.visible) {
@@ -102,12 +113,9 @@
               marker.setMap(this.map);
             }
           } else if (this.userInViewPort(marker)) {
-            // eslint-disable-next-line
-            marker.setAnimation(google.maps.Animation.DROP);
             marker.setVisible(true);
             marker.setMap(this.map);
           } else {
-            marker.setAnimation(null);
             marker.setVisible(false);
             marker.setMap(null);
           }
