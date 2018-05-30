@@ -32,10 +32,7 @@
           maxZoom: 15,
           streetViewControl: false,
           styles:
-            [{ stylers: [{ saturation: -100 }, { gamma: 1 }] }, {
-              elementType: 'labels.text.stroke',
-              stylers: [{ visibility: 'off' }],
-            }],
+            [{ stylers: [{ saturation: -15 }, { gamma: 1 }] }],
         },
       };
     },
