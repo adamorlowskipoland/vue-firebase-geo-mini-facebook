@@ -31,8 +31,8 @@
           minZoom: 3,
           maxZoom: 15,
           streetViewControl: false,
-          styles:
-            [{ stylers: [{ saturation: -15 }, { gamma: 1 }] }],
+          // styles:
+          //   [{ stylers: [{ saturation: -5 },] }],
         },
       };
     },
@@ -95,6 +95,7 @@
             lat,
             lng,
           },
+          map: this.map,
           icon: this.loadImg('ninja.png'),
           // icon: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
         });
@@ -105,16 +106,10 @@
       async updateMarkers() {
         this.bounds = await this.map.getBounds();
         this.markers.forEach((marker) => {
-          if (this.userInViewPort(marker) && marker.visible) {
-            if (!marker.map) {
-              marker.setMap(this.map);
-            }
-          } else if (this.userInViewPort(marker)) {
-            marker.setVisible(true);
-            marker.setMap(this.map);
-          } else {
+          if (!this.userInViewPort(marker)) {
             marker.setVisible(false);
-            marker.setMap(null);
+          } else {
+            marker.setVisible(true);
           }
         });
       },
