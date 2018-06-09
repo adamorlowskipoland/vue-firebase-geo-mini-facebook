@@ -49,23 +49,25 @@
         'togglePreLoader',
       ]),
       async login() {
-        this.togglePreLoader();
-        if (this.filledAllInputs) {
-          try {
+        try {
+          this.togglePreLoader();
+          if (this.filledAllInputs) {
             await firebase.auth().signInWithEmailAndPassword(this.email, this.password);
             this.$router.push({ name: 'Gmap' });
-            // eslint-disable-next-line
+            this.feedback = null;
+          } else {
+            this.feedback = 'Please fill both fields';
           }
-          catch (err) {
-            this.feedback = err.message;
-            throw new Error(err);
-            // eslint-disable-next-line
-          }
-          this.feedback = null;
-        } else {
-          this.feedback = 'Please fill both fields';
+          // eslint-disable-next-line
         }
-        this.togglePreLoader();
+        catch (err) {
+          this.feedback = err.message;
+          throw new Error(err);
+          // eslint-disable-next-line
+        }
+        finally {
+          this.togglePreLoader();
+        }
       },
     },
   };

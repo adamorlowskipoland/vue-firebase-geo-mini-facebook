@@ -37,6 +37,7 @@
   import slugify from 'slugify';
   import firebase from 'firebase';
   import db from '@/firebase/init';
+  import { mapMutations } from 'vuex';
 
   export default {
     name: 'Signup',
@@ -55,7 +56,11 @@
       },
     },
     methods: {
+      ...mapMutations([
+        'togglePreLoader',
+      ]),
       signup() {
+        this.togglePreLoader();
         if (this.filledAllInputs) {
           this.slug = slugify(this.alias, {
             replacement: '-',
@@ -65,13 +70,13 @@
           this.verifyAlias(this.slug);
         } else {
           this.feedback = 'You must fill all fields';
+          this.togglePreLoader();
         }
       },
       async verifyAlias(alias) {
         try {
           const checkAlias = await firebase.functions().httpsCallable('checkAlias');
           const { data } = await checkAlias({ slug: this.slug });
-          console.log(data.unique);
           if (!data.unique) {
             this.feedback = 'Alias alredy taken';
           } else {
@@ -92,6 +97,10 @@
         catch (err) {
           this.feedback = err.message;
           throw new Error(err);
+          // eslint-disable-next-line
+        }
+        finally {
+          this.togglePreLoader();
         }
       },
     },
