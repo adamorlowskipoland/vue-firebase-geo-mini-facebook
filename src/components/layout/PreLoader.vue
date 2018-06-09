@@ -55,3 +55,9 @@
     name: 'PreLoader',
   };
 </script>
+
+<style>
+  .preloader-wrapper {
+    position: absolute;
+  }
+</style>

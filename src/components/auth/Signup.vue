@@ -35,8 +35,8 @@
 
 <script>
   import slugify from 'slugify';
-  import db from '@/firebase/init';
   import firebase from 'firebase';
+  import db from '@/firebase/init';
 
   export default {
     name: 'Signup',
@@ -69,12 +69,14 @@
       },
       async verifyAlias(alias) {
         try {
-          const ref = await db.collection('users').doc(alias);
-          const doc = await ref.get();
-          if (doc.exists) {
+          const checkAlias = await firebase.functions().httpsCallable('checkAlias');
+          const unique = await checkAlias({ slug: this.slug });
+          console.log(unique);
+          if (!unique) {
             this.feedback = 'Alias alredy taken';
           } else {
             this.feedback = 'Signing in...';
+            const ref = await db.collection('users').doc(alias);
             const { user } = await firebase.auth()
               .createUserWithEmailAndPassword(this.email, this.password);
             await ref.set({
