@@ -1,14 +1,17 @@
 <template>
-  <div class="map">
-    <div id="map"
-         ref="map"
-         class="google-map"></div>
+  <div class='map'>
+    <div id='map'
+         ref='map'
+         class='google-map'></div>
   </div>
 </template>
 
 <script>
   import firebase from 'firebase/app';
   import db from '@/firebase/init';
+  import { mapMutations } from 'vuex';
+
+  const icons = require.context('@/assets/', false, /\.png$|\.jpg$/);
 
   export default {
     name: 'Gmap',
@@ -28,10 +31,15 @@
           minZoom: 3,
           maxZoom: 15,
           streetViewControl: false,
+          // styles:
+          //   [{ stylers: [{ saturation: -5 },] }],
         },
       };
     },
     methods: {
+      ...mapMutations([
+        'togglePreLoader',
+      ]),
       async setUpUser() {
         this.user = await firebase.auth().currentUser;
       },
@@ -60,7 +68,18 @@
           const data = user.data();
           if (data.geolocation) {
             const marker = this.createMarker(data.geolocation);
+            // marker.setLabel(data.alias);
             marker.addListener('click', () => {
+              this.map.panTo(marker.getPosition());
+              const content = `<div><p>${data.alias}</p><p>dbl click flag to Go to profile</p></div>`;
+              // eslint-disable-next-line
+              const tooltip = new google.maps.InfoWindow({
+                content,
+                maxWidth: 200,
+              });
+              tooltip.open(this.map, marker);
+            });
+            marker.addListener('dblclick', () => {
               this.$router.push({ name: 'ViewProfile', params: { id: user.id } });
             });
             this.markers.push(marker);
@@ -70,27 +89,32 @@
       createMarker({ lat, lng }) {
         // eslint-disable-next-line
         return new google.maps.Marker({
+          // eslint-disable-next-line
+          animation: google.maps.Animation.DROP,
           position: {
             lat,
             lng,
           },
+          map: this.map,
+          icon: this.loadImg('ninja.png'),
+          // icon: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
         });
+      },
+      loadImg(path) {
+        return path ? icons(`./${path}`) : 0;
       },
       async updateMarkers() {
         this.bounds = await this.map.getBounds();
-        const geolocation = {};
         this.markers.forEach((marker) => {
-          geolocation.lat = marker.position.lat();
-          geolocation.lng = marker.position.lng();
-          if (this.userInViewPort(geolocation)) {
-            marker.setMap(this.map);
+          if (!this.userInViewPort(marker)) {
+            marker.setVisible(false);
           } else {
-            marker.setMap(null);
+            marker.setVisible(true);
           }
         });
       },
-      userInViewPort(geolocation) {
-        return this.bounds.contains(geolocation);
+      userInViewPort(marker) {
+        return this.bounds.contains(marker.getPosition());
       },
       async renderMap() {
         // eslint-disable-next-line
@@ -102,9 +126,11 @@
         this.updateMarkers();
         // eslint-disable-next-line
         google.maps.event.addListener(this.map, 'idle', this.updateMarkers);
+        this.togglePreLoader();
       },
     },
     mounted() {
+      this.togglePreLoader();
       this.setUpUser();
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(({ coords }) => {
