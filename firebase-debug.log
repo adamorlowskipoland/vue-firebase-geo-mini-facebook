@@ -1,0 +1,89 @@
+[debug] [2018-06-09T21:38:18.721Z] ----------------------------------------------------------------------
+[debug] [2018-06-09T21:38:18.724Z] Command:       /Users/MacbookAir/.nvm/versions/node/v10.1.0/bin/node /Users/MacbookAir/.nvm/versions/node/v10.1.0/bin/firebase deploy
+[debug] [2018-06-09T21:38:18.724Z] CLI Version:   3.18.4
+[debug] [2018-06-09T21:38:18.724Z] Platform:      darwin
+[debug] [2018-06-09T21:38:18.724Z] Node Version:  v10.1.0
+[debug] [2018-06-09T21:38:18.725Z] Time:          Sat Jun 09 2018 23:38:18 GMT+0200 (CEST)
+[debug] [2018-06-09T21:38:18.725Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2018-06-09T21:38:18.745Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2018-06-09T21:38:18.746Z] > authorizing via signed-in user
+[debug] [2018-06-09T21:38:18.748Z] > refreshing access token with scopes: ["email","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","openid"]
+[debug] [2018-06-09T21:38:18.748Z] >>> HTTP REQUEST POST https://www.googleapis.com/oauth2/v3/token  
+ { refresh_token: '1/inlIFu7q2pat7M2v4WUp-HoqQ_n6y8zoPkFaeYG5QZY',
+  client_id: '563584335869-fgrhgmd47bqnekij5i8b5pr03ho849e6.apps.googleusercontent.com',
+  client_secret: 'j9iVZfS8kkCEFUPaAeJV0sAi',
+  grant_type: 'refresh_token',
+  scope: 'email https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/cloudplatformprojects.readonly https://www.googleapis.com/auth/firebase openid' } 
+ Sat Jun 09 2018 23:38:18 GMT+0200 (CEST)
+[debug] [2018-06-09T21:38:19.058Z] <<< HTTP RESPONSE 200
+[debug] [2018-06-09T21:38:19.075Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/projects/geo-ninjas-26888  
+  
+ Sat Jun 09 2018 23:38:19 GMT+0200 (CEST)
+[debug] [2018-06-09T21:38:19.881Z] <<< HTTP RESPONSE 200
+[debug] [2018-06-09T21:38:19.882Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/database/geo-ninjas-26888/tokens  
+  
+ Sat Jun 09 2018 23:38:19 GMT+0200 (CEST)
+[debug] [2018-06-09T21:38:20.464Z] <<< HTTP RESPONSE 200
+[info] 
+[info] === Deploying to 'geo-ninjas-26888'...
+[info] 
+[info] i  deploying firestore, functions, hosting
+[info] i  firestore: checking firestore.rules for compilation errors...
+[debug] [2018-06-09T21:38:25.303Z] >>> HTTP REQUEST POST https://firebaserules.googleapis.com/v1/projects/geo-ninjas-26888:test  
+ { source: { files: [ [Object] ] } } 
+ Sat Jun 09 2018 23:38:25 GMT+0200 (CEST)
+[debug] [2018-06-09T21:38:26.360Z] <<< HTTP RESPONSE 200
+[info] ✔  firestore: rules file firestore.rules compiled successfully
+[debug] [2018-06-09T21:38:26.363Z] > [functions] package.json contents: {
+  "name": "functions",
+  "description": "Cloud Functions for Firebase",
+  "scripts": {
+    "serve": "firebase serve --only functions",
+    "shell": "firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "dependencies": {
+    "firebase-admin": "~5.12.0",
+    "firebase-functions": "^1.0.1"
+  },
+  "private": true
+}
+[info] i  functions: ensuring necessary APIs are enabled...
+[debug] [2018-06-09T21:38:26.364Z] >>> HTTP REQUEST GET https://servicemanagement.googleapis.com/v1/services/cloudfunctions.googleapis.com/projectSettings/geo-ninjas-26888?view=CONSUMER_VIEW  
+  
+ Sat Jun 09 2018 23:38:26 GMT+0200 (CEST)
+[debug] [2018-06-09T21:38:26.364Z] >>> HTTP REQUEST GET https://servicemanagement.googleapis.com/v1/services/runtimeconfig.googleapis.com/projectSettings/geo-ninjas-26888?view=CONSUMER_VIEW  
+  
+ Sat Jun 09 2018 23:38:26 GMT+0200 (CEST)
+[debug] [2018-06-09T21:38:27.241Z] <<< HTTP RESPONSE 200
+[info] ✔  functions: all necessary APIs are enabled
+[debug] [2018-06-09T21:38:27.796Z] <<< HTTP RESPONSE 200
+[debug] [2018-06-09T21:38:27.796Z] >>> HTTP REQUEST GET https://cloudresourcemanager.googleapis.com/v1/projects/geo-ninjas-26888  
+  
+ Sat Jun 09 2018 23:38:27 GMT+0200 (CEST)
+[debug] [2018-06-09T21:38:28.818Z] <<< HTTP RESPONSE 200
+[debug] [2018-06-09T21:38:28.819Z] >>> HTTP REQUEST GET https://mobilesdk-pa.googleapis.com/v1/projects/514018974395:getServerAppConfig  
+  
+ Sat Jun 09 2018 23:38:28 GMT+0200 (CEST)
+[debug] [2018-06-09T21:38:29.328Z] <<< HTTP RESPONSE 200
+[info] i  firestore: uploading rules firestore.rules...
+[debug] [2018-06-09T21:38:29.332Z] >>> HTTP REQUEST POST https://firebaserules.googleapis.com/v1/projects/geo-ninjas-26888/rulesets  
+ { source: { files: [ [Object] ] } } 
+ Sat Jun 09 2018 23:38:29 GMT+0200 (CEST)
+[debug] [2018-06-09T21:38:29.333Z] >>> HTTP REQUEST GET https://firestore.googleapis.com/v1beta1/projects/geo-ninjas-26888/databases/(default)/indexes  
+  
+ Sat Jun 09 2018 23:38:29 GMT+0200 (CEST)
+[debug] [2018-06-09T21:38:30.455Z] <<< HTTP RESPONSE 200
+[info] 
+[info] NOTE: The following indexes are already deployed but not present in the specified indexes file:
+[info] [READY] (comments) -- (to,ASCENDING) (time,ASCENDING) 
+[info] 
+[debug] [2018-06-09T21:38:30.505Z] <<< HTTP RESPONSE 200
+[debug] [2018-06-09T21:38:30.505Z] [rules] created ruleset projects/geo-ninjas-26888/rulesets/25bba3e7-c50b-4bbb-9ceb-e4f8ac4eb93b
+[info] i  functions: preparing functions directory for uploading...
+[debug] [2018-06-09T21:38:30.506Z] >>> HTTP REQUEST GET https://runtimeconfig.googleapis.com/v1beta1/projects/geo-ninjas-26888/configs  
+  
+ Sat Jun 09 2018 23:38:30 GMT+0200 (CEST)

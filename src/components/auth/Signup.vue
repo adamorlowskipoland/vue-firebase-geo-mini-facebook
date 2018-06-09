@@ -64,26 +64,27 @@
           });
           this.verifyAlias(this.slug);
         } else {
-          this.feedback = 'You must enter an alias';
+          this.feedback = 'You must fill all fields';
         }
       },
       async verifyAlias(alias) {
         try {
           const checkAlias = await firebase.functions().httpsCallable('checkAlias');
-          const unique = await checkAlias({ slug: this.slug });
-          console.log(unique);
-          if (!unique) {
+          const { data } = await checkAlias({ slug: this.slug });
+          console.log(data.unique);
+          if (!data.unique) {
             this.feedback = 'Alias alredy taken';
           } else {
             this.feedback = 'Signing in...';
-            const ref = await db.collection('users').doc(alias);
             const { user } = await firebase.auth()
               .createUserWithEmailAndPassword(this.email, this.password);
-            await ref.set({
-              alias: this.alias,
-              geolocation: null,
-              user_id: user.uid,
-            });
+            await db.collection('users')
+              .doc(alias)
+              .set({
+                alias: this.alias,
+                geolocation: null,
+                user_id: user.uid,
+              });
             this.$router.push({ name: 'Gmap' });
           }
           // eslint-disable-next-line
