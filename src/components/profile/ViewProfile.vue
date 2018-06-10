@@ -27,6 +27,8 @@
 <script>
   import db from '@/firebase/init';
   import firebase from 'firebase';
+  import 'firebase/auth';
+  import { mapMutations } from 'vuex';
 
   export default {
     name: 'ViewProfile',
@@ -41,7 +43,11 @@
       };
     },
     methods: {
+      ...mapMutations([
+        'togglePreLoader',
+      ]),
       async addComment() {
+        this.togglePreLoader();
         if (this.newComment) {
           this.feedback = null;
           try {
@@ -58,10 +64,15 @@
           catch (err) {
             this.feedback = err.message;
             throw new Error(err);
+            // eslint-disable-next-line
           }
-          this.newComment = null;
+          finally {
+            this.togglePreLoader();
+            this.newComment = null;
+          }
         } else {
           this.feedback = 'Enter a comment';
+          this.togglePreLoader();
         }
       },
       async setCurrentUser(ref) {
@@ -106,11 +117,13 @@
       next();
     },
     created() {
+      this.togglePreLoader();
       const ref = db.collection('users');
       this.users = ref;
       this.setCurrentUser(ref);
       this.setProfileData(ref);
       this.displayComments();
+      this.togglePreLoader();
     },
   };
 </script>

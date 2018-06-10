@@ -21,6 +21,7 @@
 </template>
 <script>
   import firebase from 'firebase';
+  import 'firebase/auth';
   import db from '@/firebase/init';
 
   export default {

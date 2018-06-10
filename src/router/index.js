@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import firebase from 'firebase';
+import 'firebase/auth';
 import Gmap from '@/components/home/Gmap';
 import Signup from '@/components/auth/Signup';
 import Login from '@/components/auth/Login';
